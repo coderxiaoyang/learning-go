@@ -19,7 +19,8 @@ Go 语言数据类型包含基础类型和复合类型两大类。
 
 > 变量示意图
 
-[![sdX7rj.png](https://s3.ax1x.com/2021/01/15/sdX7rj.png)](https://imgchr.com/i/sdX7rj)
+![sdX7rj.png](https://s3.ax1x.com/2021/01/15/sdX7rj.png)
+
 
 ##### 三、变量的作用与应用场景
 
