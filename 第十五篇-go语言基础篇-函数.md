@@ -398,6 +398,125 @@ deferAction2(1,2)
 
 > defer之后只能是函数调用 不能是表达式 比如： a++
 
+
+```go
+test := func() {
+	fmt.Println("test1")
+}
+
+defer test()
+
+test = func() {
+	fmt.Println("test2")
+}
+
+fmt.Println("test3")
+
+// 输出
+test3
+test1
+
+// 在执行defer之后 将整个函数内容压入到待执行栈中
+```
+
+```go
+x := 10
+defer func(a int) {
+	fmt.Println(a)
+}(x)
+
+x++
+
+// 输出 
+10
+
+// 在将函数压入到栈的时候 参数的值也会进行拷贝 在之后执行的时候 参数值是当初拷贝的值
+```
+
+
+```go
+x := 10
+defer func(a *int) {
+	fmt.Println(*a)
+}(&x)
+
+x++
+//输出
+11
+
+// 当参数是指针的时候 压入到栈的仅仅是指针 在执行之前 指针指向数据发生变化 则等到执行的时候 数据也会变化
+```
+
+```go
+x := 10
+defer func() {
+	fmt.Println(x)
+}()
+
+x++
+
+// 输出
+11
+
+// 函数闭包特性  defer后面的函数并没有参数 函数内部使用的变量是全局的变量（即执行的是外部变量）
+```
+
+```go
+func f1() int {
+	x := 10
+
+	defer func() {
+		x++
+	}()
+
+	return x
+}
+
+func main() {
+	fmt.Println(f1())
+}
+
+// 结果
+10
+
+// 实际原因是 在返回return之前 会将返回语句进行赋值返回
+
+// return x
+// temp := x   return temp
+// 因为 x 是整型 直接信息拷贝赋值
+// 先执行拷贝赋值 再执行defer 语句 因此无法影响到 temp 
+```
+
+
+```go
+func f1() *int {
+	x := 10
+	b := &x
+
+	defer func() {
+		*b++
+	}()
+
+	return b
+}
+
+func main() {
+	fmt.Println(*f1())
+}
+
+// 结果
+11
+
+// return b
+// temp := b  return temp
+// 在执行return 语句之前 执行的是 赋值语句 因为是地址指针数据 因此在执行完defer之后 指向的共同数据发生变化可以感知到
+```
+
+> defer 本质上注册了一个延迟函数  没有嵌套（多个defer平级） 用来替代 try except finally
+
+
+
+
 ##### 八、函数的高级用法
 
 > 函数做为一种类型，在函数参数中使用
