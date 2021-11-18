@@ -517,6 +517,8 @@ func main() {
 
 **如何做异常捕捉**
 
+使用`panic`抛出异常 
+
 ```go
 func div(a, b int) (int, error) {
 
@@ -533,7 +535,7 @@ func main() {
 	b := 0
 
 	defer func() {
-
+		// 将 捕捉异常的逻辑放到函数当中
 		err := recover()
 
 		if err != nil {
@@ -546,6 +548,38 @@ func main() {
 	fmt.Println(div(a, b))
 }
 ```
+
+panic会引起主线程的挂掉， 同时会导致其他的协程都挂掉
+
+在协程本身的作用空间呢使用panic 可以捕捉到异常 但是 在父协程中无法捕获子协程中出现的异常
+
+```go
+func f1(){
+	defer func() {
+		err := recover()
+		if err != nil {
+			fmt.Println("捕获到了")
+		}
+	}()
+
+	go func() {
+		defer func() {
+			err := recover()
+			if err != nil {
+			    fmt.Println("捕获到了2")
+			}
+		}()
+
+		panic("出错了")
+	}()
+
+	// 必须延迟 否则会直接退出父协程
+	time.Sleep(10*time.Second)
+}
+```
+
+> 上面函数是无法捕获到子协程产生的错误的
+
 
 
 
