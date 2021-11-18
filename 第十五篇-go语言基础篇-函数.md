@@ -515,6 +515,38 @@ func main() {
 > defer 本质上注册了一个延迟函数  没有嵌套（多个defer平级） 用来替代 try except finally
 
 
+**如何做异常捕捉**
+
+```go
+func div(a, b int) (int, error) {
+
+	if b == 0 {
+		panic("被除数不能为0")
+	}
+
+	return a / b, nil
+
+}
+
+func main() {
+	a := 12
+	b := 0
+
+	defer func() {
+
+		err := recover()
+
+		if err != nil {
+			fmt.Println("异常被捕捉到")
+		}
+		fmt.Println("div")
+
+	}()
+
+	fmt.Println(div(a, b))
+}
+```
+
 
 
 ##### 八、函数的高级用法
